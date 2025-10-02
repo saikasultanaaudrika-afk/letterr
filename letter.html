@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter for My Boyfriend</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Cursive', sans-serif; /* Or any elegant font */
+            background-color: #f0f0f0;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .envelope-wrapper {
+            position: relative;
+            width: 350px;
+            height: 220px;
+            cursor: pointer;
+            transition: transform 1s ease-in-out;
+        }
+
+        .envelope-wrapper.open {
+            transform: translateY(-50px) rotateX(10deg);
+        }
+
+        .envelope {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: #f0ead6; /* Cream color */
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform-style: preserve-3d;
+        }
+
+        .envelope-front, .envelope-back, .envelope-top-flap, .envelope-bottom-flap, .envelope-left-flap, .envelope-right-flap {
+            position: absolute;
+            background-color: #f0ead6;
+        }
+
+        /* Front of the envelope */
+        .envelope-front {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            z-index: 2;
+            backface-visibility: hidden;
+        }
+
+        /* Back of the envelope (visible when open) */
+        .envelope-back {
+            width: calc(100% - 20px);
+            height: calc(100% - 20px);
+            top: 10px;
+            left: 10px;
+            background-color: #e0d8c7; /* Slightly darker cream */
+            border-radius: 5px;
+            transform: translateZ(-1px);
+        }
+
+        /* Flaps */
+        .envelope-top-flap {
+            width: 100%;
+            height: 50%;
+            top: 0;
+            left: 0;
+            background-color: #f0ead6;
+            transform-origin: bottom center;
+            z-index: 3;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.5s ease-in-out, background-color 0.3s;
+            pointer-events: none; /* So the click goes to the wrapper */
+        }
+
+        .envelope-bottom-flap {
+            width: 100%;
+            height: 50%;
+            bottom: 0;
+            left: 0;
+            background-color: #f0ead6;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .envelope-left-flap {
+            width: 50%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: #f0ead6;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .envelope-right-flap {
+            width: 50%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            background-color: #f0ead6;
+            border-radius: 0 10px 10px 0;
+        }
+
+        /* Open flap state */
+        .envelope-wrapper.open .envelope-top-flap {
+            transform: rotateX(180deg);
+            z-index: 1; /* Move behind the letter */
+            background-color: #e0d8c7; /* Show inside of flap */
+        }
+
+        /* Letter inside */
+        .letter {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            top: 5%;
+            left: 5%;
+            padding: 20px;
+            box-sizing: border-box;
+            line-height: 1.6;
+            color: #333;
+            transform: translateZ(1px) translateY(0); /* Initially slightly above envelope */
+            transition: transform 0.8s ease-in-out, opacity 0.8s ease-in-out;
+            opacity: 0;
+            z-index: 1;
+            overflow-y: auto; /* For longer letters */
+        }
+
+        .envelope-wrapper.open .letter {
+            opacity: 1;
+            transform: translateZ(50px) translateY(-80px); /* Pull out and up */
+            transition-delay: 0.3s; /* Delay letter animation slightly */
+        }
+
+        .letter h2 {
+            text-align: center;
+            color: #8b4513; /* Brown for a classic feel */
+            margin-bottom: 20px;
+        }
+
+        .letter p {
+            margin-bottom: 1em;
+            text-indent: 1em;
+        }
+
+        .letter .signature {
+            text-align: right;
+            margin-top: 30px;
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Seal for the envelope */
+        .seal {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background-color: #cc4444; /* Red wax seal */
+            border-radius: 50%;
+            z-index: 4;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .envelope-wrapper.open .seal {
+            opacity: 0;
+            pointer-events: none; /* Make it unclickable when open */
+        }
+
+        /* A subtle animation for the envelope being delivered */
+        @keyframes arrive {
+            from {
+                transform: translateY(-200px) rotateX(45deg);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0) rotateX(0deg);
+                opacity: 1;
+            }
+        }
+
+        .envelope-wrapper {
+            animation: arrive 1s ease-out forwards;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="envelope-wrapper" onclick="toggleEnvelope()">
+        <div class="envelope">
+            <div class="envelope-back"></div>
+            <div class="envelope-left-flap"></div>
+            <div class="envelope-right-flap"></div>
+            <div class="envelope-bottom-flap"></div>
+            <div class="envelope-top-flap"></div>
+            <div class="envelope-front"></div>
+            <div class="seal">❤️</div>
+        </div>
+
+        <div class="letter">
+            <h2>Meri Jaan,</h2>
+            <p>I miss you every second, Everyday. Even when I writing this. Thank you for sticking with me. I Love You more than you can imagine.</p>
+            <p>And it’s National Boyfriend Day. Not like I ever celebrated. But I wanted to make you feel special. Know that you are always in my thoughts.</p>
+            <p>P.S This is the reason I was replying late. </p>
+            <p class="signature">With all my love,<br> Audrika </p>
+        </div>
+    </div>
+
+    <script>
+        function toggleEnvelope() {
+            const envelopeWrapper = document.querySelector('.envelope-wrapper');
+            envelopeWrapper.classList.toggle('open');
+        }
+    </script>
+
+</body>
+</html>
